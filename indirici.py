@@ -11,6 +11,8 @@ from telegram.ext import filters
 import yt_dlp
 import os
 import time
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
 
 # Durum tanımları (ConversationHandler için)
 FORMAT_SELECTION, URL_WAITING = range(2)
@@ -188,5 +190,18 @@ def main():
     application.add_handler(CommandHandler('yardim', yardim))
     application.run_polling()
 
+class DummyHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        self.wfile.write(b"Bot is running!")
+
+def start_dummy_server():
+    server = HTTPServer(("0.0.0.0", 10000), DummyHandler)
+    server.serve_forever()
+
 if __name__ == '__main__':
+    # Sahte HTTP sunucusunu ayrı bir thread'de başlat
+    threading.Thread(target=start_dummy_server, daemon=True).start()
     main()
