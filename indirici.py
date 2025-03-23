@@ -79,19 +79,21 @@ async def handle_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ydl_opts = {
             'format': 'bestaudio/best',
             'outtmpl': '%(title)s.%(ext)s',
-            'ffmpeg_location': 'C:\\ffmpeg\\bin\\ffmpeg.exe',
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'mp3',
                 'preferredquality': '192',
             }],
+            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'cookiefile': None,
         }
     else:  # video
         ydl_opts = {
             'format': 'bestvideo+bestaudio/best',
             'outtmpl': '%(title)s.%(ext)s',
-            'ffmpeg_location': 'C:\\ffmpeg\\bin\\ffmpeg.exe',
             'merge_output_format': 'mp4',
+            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'cookiefile': None,
         }
 
     try:
@@ -162,11 +164,6 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 def main():
-    # Eski:
-    # application = Application.builder().token('8075000546:AAEa3Q2xVSDOFB6wn7kbCngQafc2g1iQnpk').build()
-
-    # Yeni: Token'ı ortam değişkeninden alıyoruz
-    
     token = os.getenv('TOKEN')
     application = Application.builder().token(token).build()
 
@@ -177,7 +174,7 @@ def main():
                 CommandHandler('mp3', mp3_command),
                 CommandHandler('video', video_command),
                 CommandHandler('yardim', yardim),
-                CommandHandler('start', start),  # Start butonu için
+                CommandHandler('start', start),
                 MessageHandler(filters.Regex('^(MP3|Video|Yardım|Start)$'), lambda u, c: mp3_command(u, c) if u.message.text == 'MP3' else video_command(u, c) if u.message.text == 'Video' else yardim(u, c) if u.message.text == 'Yardım' else start(u, c)),
             ],
             URL_WAITING: [
